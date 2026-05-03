@@ -1,4 +1,3 @@
-# OOPs
 # OOP Practice Problems – Complete Solutions
 
 > **Environment:** Ubuntu 22.04+ | Java 17+ | g++ (C++17)
@@ -172,18 +171,11 @@ class PrimeThread extends Thread {
         for (int n = 2; n <= 50; n++) {
             boolean prime = true;
             for (int i = 2; i <= n / 2; i++) {
-                if (n % i == 0) {
-                    prime = false;
-                    break;
-                }
+                if (n % i == 0) { prime = false; break; }
             }
             if (prime) {
                 System.out.println("Prime: " + n);
-            }
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                try { Thread.sleep(500); } catch (InterruptedException e) {}
             }
         }
     }
@@ -194,14 +186,8 @@ class FibThread extends Thread {
         int a = 0, b = 1;
         for (int i = 0; i < 10; i++) {
             System.out.println("Fib: " + a);
-            int temp = a + b;
-            a = b;
-            b = temp;
-            try {
-                Thread.sleep(500);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            int temp = a + b; a = b; b = temp;
+            try { Thread.sleep(500); } catch (InterruptedException e) {}
         }
     }
 }
@@ -1198,11 +1184,14 @@ g++ -o q22 q22.cpp
 
 **Concept:** `fstream` binary read/write, in-place record update.
 
+> **Note:** Uses `char name[30]` (not `string`) because `string` has variable size and can't be reliably binary-written as a fixed-size block.
+
 ```cpp
 // File: q20.cpp
 
 #include <iostream>
 #include <fstream>
+#include <cstring>
 using namespace std;
 
 class Product {
@@ -1263,10 +1252,11 @@ void displayAll() {
 }
 
 int main() {
-    // Sample products
-    Product p1; p1.productID = 1; p1.stockQuantity = 0;  strcpy(p1.name, "Pen");
-    Product p2; p2.productID = 2; p2.stockQuantity = 5;  strcpy(p2.name, "Notebook");
-    Product p3; p3.productID = 3; p3.stockQuantity = 0;  strcpy(p3.name, "Ruler");
+    Product p1, p2, p3;
+
+    p1.productID = 1; p1.stockQuantity = 0; strncpy(p1.name, "Pen",      29);
+    p2.productID = 2; p2.stockQuantity = 5; strncpy(p2.name, "Notebook", 29);
+    p3.productID = 3; p3.stockQuantity = 0; strncpy(p3.name, "Ruler",    29);
 
     addProduct(p1);
     addProduct(p2);
@@ -1515,17 +1505,11 @@ using namespace std;
 
 template <class T>
 class Vector {
-    T*  arr;
+    T   arr[100];
     int size;
 
 public:
-    Vector(int s) : size(s) {
-        arr = new T[s];
-    }
-
-    ~Vector() {
-        delete[] arr;
-    }
+    Vector(int s) : size(s) {}
 
     void create() {
         cout << "Enter " << size << " elements:\n";
@@ -1593,17 +1577,11 @@ using namespace std;
 
 template <class T>
 class ScoreList {
-    T*  arr;
+    T   arr[100];
     int size;
 
 public:
-    ScoreList(int s) : size(s) {
-        arr = new T[s];
-    }
-
-    ~ScoreList() {
-        delete[] arr;
-    }
+    ScoreList(int s) : size(s) {}
 
     void create() {
         cout << "Enter " << size << " scores:\n";
