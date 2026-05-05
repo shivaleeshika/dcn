@@ -771,72 +771,50 @@ java Q24
 ```cpp
 // File: q4.cpp
 
-#include <iostream>
+#include<iostream>
 using namespace std;
 
 class Complex {
 public:
-    float real;
-    float imag;
+    float r, i;
 
-    // Default constructor: 0 + 0i
-    Complex(float r = 0, float i = 0) : real(r), imag(i) {}
-
-    // Overload + operator
-    Complex operator+(const Complex& c) {
-        return Complex(real + c.real, imag + c.imag);
+    // constructor (default + parameterized)
+    Complex(float x = 0, float y = 0) {
+        r = x;
+        i = y;
     }
 
-    void display() {
-        if (imag >= 0)
-            cout << real << " + " << imag << "i" << endl;
-        else
-            cout << real << " - " << -imag << "i" << endl;
+    // operator overloading
+    Complex operator+(Complex c) {
+        return Complex(r + c.r, i + c.i);
+    }
+
+    void show() {
+        cout << r << "+" << i << "i\n";
     }
 };
 
 int main() {
-    Complex c1, c2, result;
-    int choice;
+    Complex c1, c2, c3;
+    int ch;
 
     do {
-        cout << "\n===== Complex Number Menu =====\n";
-        cout << "1. Enter two complex numbers\n";
-        cout << "2. Add them\n";
-        cout << "3. Display both numbers\n";
-        cout << "0. Exit\n";
-        cout << "Choice: ";
-        cin >> choice;
+        cout << "\n1.Input  2.Add  3.Display  0.Exit\n";
+        cin >> ch;
 
-        switch (choice) {
-            case 1:
-                cout << "Enter C1 (real imag): ";
-                cin >> c1.real >> c1.imag;
-                cout << "Enter C2 (real imag): ";
-                cin >> c2.real >> c2.imag;
-                break;
-
-            case 2:
-                result = c1 + c2;
-                cout << "Sum: ";
-                result.display();
-                break;
-
-            case 3:
-                cout << "C1: "; c1.display();
-                cout << "C2: "; c2.display();
-                break;
-
-            case 0:
-                cout << "Exiting...\n";
-                break;
-
-            default:
-                cout << "Invalid option!\n";
+        if (ch == 1) {
+            cin >> c1.r >> c1.i >> c2.r >> c2.i;
         }
-    } while (choice != 0);
+        else if (ch == 2) {
+            c3 = c1 + c2;
+            c3.show();
+        }
+        else if (ch == 3) {
+            c1.show();
+            c2.show();
+        }
 
-    return 0;
+    } while (ch != 0);
 }
 ```
 
