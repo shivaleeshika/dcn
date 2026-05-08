@@ -1,1820 +1,551 @@
-# OOP Practice Problems – Complete Solutions
-
-> **Environment:** Ubuntu 22.04+ | Java 17+ | g++ (C++17)
+# Computer Networks Practicals — Code & Concept Explanations
 
 ---
 
-## Prerequisites – One-Time Setup
+## Practical 4 — Hamming Code (Error Detection & Correction)
 
-```bash
-# Install Java
-sudo apt update
-sudo apt install default-jdk -y
-java -version
+### Concept
 
-# Install G++ (C++ compiler)
-sudo apt install g++ -y
-g++ --version
-```
+**Hamming Code** is an error-detecting and error-correcting code. It adds **parity bits** at specific positions (powers of 2: 1, 2, 4, …) to a block of data bits so that, if a single bit flips during transmission, the receiver can calculate which position is wrong and flip it back.
 
----
+**Key idea:**
+- Data bits are placed at non-power-of-2 positions (3, 5, 6, 7).
+- Parity bits are placed at positions 1, 2, 4.
+- Each parity bit covers a specific subset of positions (those whose binary representation has that bit set).
+- The receiver recomputes the parity checks. If all are 0 → no error. If not → their combination gives the error position (syndrome).
 
-## How to Run (General Pattern)
-
-### Java
-```bash
-# Compile
-javac FileName.java
-
-# Run
-java ClassName
-
-# For packages (run from parent directory)
-javac converter/UnitConverter.java Q3.java
-java Q3
-```
-
-### C++
-```bash
-# Compile
-g++ -o output_name filename.cpp
-
-# Run
-./output_name
-```
+**Positions covered:**
+| Parity Bit | Covers positions |
+|---|---|
+| P1 (pos 1) | 1, 3, 5, 7 |
+| P2 (pos 2) | 2, 3, 6, 7 |
+| P4 (pos 4) | 4, 5, 6, 7 |
 
 ---
 
-## Table of Contents
-
-| # | Topic | Language |
-|---|-------|----------|
-| Q1 | Two Threads – Uppercase & Lowercase | Java |
-| Q2 | Inheritance – Employee → Manager & Engineer | C++ |
-| Q3 | Package – Unit Converter | Java |
-| Q4/Q17 | Operator Overloading – Complex Number (Menu-Driven) | C++ |
-| Q5 | Exception Handling – Student with File I/O | C++ |
-| Q6 | Template – Generic Vector | C++ |
-| Q7 | Exception Handling – Employee with File I/O | C++ |
-| Q8/Q16 | Inheritance – Book → Textbook & Novel | C++ |
-| Q9 | Inheritance – Shape → Rectangle & Triangle | Java |
-| Q10 | Two Threads – Even & Odd Numbers | Java |
-| Q11 | Operator Overloading – Complex Number (same as Q4) | C++ |
-| Q12 | Interface – Sortable (BubbleSort & SelectionSort) | Java |
-| Q13 | Inheritance – Vehicle → Car & Bike | Java |
-| Q14 | Package – Calculator | Java |
-| Q15 | Template – Generic ScoreList | C++ |
-| Q19 | Virtual Functions – Employee Salary Polymorphism | C++ |
-| Q20 | File Handling – Product Binary File | C++ |
-| Q21 | Operator Overloading – Matrix (+, -, *) | C++ |
-| Q22 | Exception Handling – BankAccount | C++ |
-| Q23 | Template – Generic Stack | C++ |
-| Q24 | Package – Hospital with Access Modifiers | Java |
-| Q25 | Interface – Payment with Abstract Transaction | Java |
-| Q26 | Two Threads – Primes & Fibonacci | Java |
-
----
-
----
-
-# MULTITHREADING (Java)
-
----
-
-## Q1 – Two Threads: Uppercase & Lowercase Letters
-
-**Concept:** Extending `Thread` class, running two threads simultaneously.
-
-```java
-// File: Q1.java
-
-class UpperCase extends Thread {
-    public void run() {
-        for (char c = 'A'; c <= 'Z'; c++) {
-            System.out.print(c + " ");
-        }
-    }
-}
-
-class LowerCase extends Thread {
-    public void run() {
-        for (char c = 'a'; c <= 'z'; c++) {
-            System.out.print(c + " ");
-        }
-    }
-}
-
-public class Q1 {
-    public static void main(String[] args) {
-        new UpperCase().start();
-        new LowerCase().start();
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q1.java
-java Q1
-```
-
----
-
-## Q10 – Two Threads: Even & Odd Numbers (1–20)
-
-**Concept:** Two threads printing even and odd numbers concurrently.
-
-```java
-// File: Q10.java
-
-class EvenThread extends Thread {
-    public void run() {
-        for (int i = 2; i <= 20; i += 2) {
-            System.out.println("Even: " + i);
-        }
-    }
-}
-
-class OddThread extends Thread {
-    public void run() {
-        for (int i = 1; i <= 20; i += 2) {
-            System.out.println("Odd: " + i);
-        }
-    }
-}
-
-public class Q10 {
-    public static void main(String[] args) {
-        new EvenThread().start();
-        new OddThread().start();
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q10.java
-java Q10
-```
-
----
-
-## Q26 – Two Threads: Prime Numbers (1–50) & Fibonacci (10 terms)
-
-**Concept:** Two threads with `Thread.sleep()` to observe interleaving.
-
-```java
-// File: Q26.java
-
-class PrimeThread extends Thread {
-    public void run() {
-        for (int n = 2; n <= 50; n++) {
-            boolean prime = true;
-            for (int i = 2; i <= n / 2; i++) {
-                if (n % i == 0) { prime = false; break; }
-            }
-            if (prime) {
-                System.out.println("Prime: " + n);
-                try { Thread.sleep(500); } catch (InterruptedException e) {}
-            }
-        }
-    }
-}
-
-class FibThread extends Thread {
-    public void run() {
-        int a = 0, b = 1;
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Fib: " + a);
-            int temp = a + b; a = b; b = temp;
-            try { Thread.sleep(500); } catch (InterruptedException e) {}
-        }
-    }
-}
-
-public class Q26 {
-    public static void main(String[] args) {
-        new PrimeThread().start();
-        new FibThread().start();
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q26.java
-java Q26
-```
-
----
-
----
-
-# INHERITANCE
-
----
-
-## Q2 – Employee → Manager & Engineer (C++)
-
-**Concept:** Single-level inheritance with `public` base class.
+### Code
 
 ```cpp
-// File: q2.cpp
-
 #include <iostream>
 using namespace std;
 
-class Employee {
-public:
-    string name;
-    int id;
-    float salary;
-
-    void input() {
-        cout << "Name: ";
-        cin >> name;
-        cout << "ID: ";
-        cin >> id;
-        cout << "Salary: ";
-        cin >> salary;
-    }
-
-    void display() {
-        cout << "Name: " << name
-             << " | ID: " << id
-             << " | Salary: " << salary
-             << endl;
-    }
-};
-
-class Manager : public Employee {
-public:
-    string dept;
-    int subordinates;
-
-    void input() {
-        Employee::input();
-        cout << "Department: ";
-        cin >> dept;
-        cout << "Number of Subordinates: ";
-        cin >> subordinates;
-    }
-
-    void display() {
-        Employee::display();
-        cout << "Department: " << dept
-             << " | Subordinates: " << subordinates
-             << endl;
-    }
-};
-
-class Engineer : public Employee {
-public:
-    string project;
-    string language;
-
-    void input() {
-        Employee::input();
-        cout << "Project: ";
-        cin >> project;
-        cout << "Programming Language: ";
-        cin >> language;
-    }
-
-    void display() {
-        Employee::display();
-        cout << "Project: " << project
-             << " | Language: " << language
-             << endl;
-    }
-};
-
 int main() {
-    Manager m;
-    cout << "\n--- Manager Details ---\n";
-    m.input();
-    m.display();
+    int data[4], ham[8] = {}, received[8];
 
-    Engineer e;
-    cout << "\n--- Engineer Details ---\n";
-    e.input();
-    e.display();
+    cout << "Enter 4 data bits: ";
+    cin >> data[0] >> data[1] >> data[2] >> data[3];
 
-    return 0;
+    // Place data bits at non-power-of-2 positions (1-indexed)
+    ham[3] = data[0];
+    ham[5] = data[1];
+    ham[6] = data[2];
+    ham[7] = data[3];
+
+    // Compute parity bits using XOR
+    ham[1] = ham[3] ^ ham[5] ^ ham[7];   // P1 covers pos 1,3,5,7
+    ham[2] = ham[3] ^ ham[6] ^ ham[7];   // P2 covers pos 2,3,6,7
+    ham[4] = ham[5] ^ ham[6] ^ ham[7];   // P4 covers pos 4,5,6,7
+
+    cout << "Hamming Code: ";
+    for (int i = 1; i <= 7; i++) cout << ham[i];
+    cout << "\n";
+
+    cout << "Enter received 7 bits: ";
+    for (int i = 1; i <= 7; i++) cin >> received[i];
+
+    // Syndrome: recompute checks on received bits
+    int c1 = received[1] ^ received[3] ^ received[5] ^ received[7];
+    int c2 = received[2] ^ received[3] ^ received[6] ^ received[7];
+    int c4 = received[4] ^ received[5] ^ received[6] ^ received[7];
+
+    // Error position = binary number formed by c4 c2 c1
+    int errorPos = c4 * 4 + c2 * 2 + c1;
+
+    if (errorPos == 0) {
+        cout << "No error detected!\n";
+    } else {
+        cout << "Error at position: " << errorPos << "\n";
+        received[errorPos] ^= 1;   // Flip the erroneous bit
+        cout << "Corrected code: ";
+        for (int i = 1; i <= 7; i++) cout << received[i];
+        cout << "\n";
+    }
 }
 ```
 
-**Run:**
-```bash
-g++ -o q2 q2.cpp
-./q2
-```
+### Code-Level Explanation
+
+| Line / Block | What it does |
+|---|---|
+| `ham[8] = {}` | 1-indexed array; index 0 unused. Initialized to 0. |
+| `ham[3]=data[0]` etc. | Places 4 data bits at positions 3, 5, 6, 7 (not powers of 2). |
+| `ham[1] = ham[3]^ham[5]^ham[7]` | XOR of the covered bits gives even parity for P1. |
+| Syndrome `c1, c2, c4` | Re-XOR the same groups on the received word. If a bit flipped, exactly the checks covering that position will be 1. |
+| `errorPos = c4*4 + c2*2 + c1` | Reconstructs the binary position from the three check bits. |
+| `received[errorPos] ^= 1` | XOR with 1 flips the bit — corrects the error. |
 
 ---
 
-## Q8 / Q16 – Book → Textbook & Novel (C++)
+## Practical 5 — Sliding Window Protocols (Go-Back-N & Selective Repeat)
 
-**Concept:** Inheritance with additional derived class members.
+### Concept
+
+Sliding window protocols are flow-control mechanisms that allow a sender to transmit multiple frames before needing an acknowledgement (ACK), improving throughput over high-latency links.
+
+**Go-Back-N (GBN):**
+- Sender sends up to `WIN` (window size) frames continuously.
+- If ANY frame in the window is lost, ALL frames from that lost frame onwards are retransmitted.
+- Simple but wasteful for high error rates.
+
+**Selective Repeat (SR):**
+- Sender retransmits ONLY the lost/unacknowledged frame.
+- More efficient but requires more memory (receiver must buffer out-of-order frames).
+
+---
+
+### Code
 
 ```cpp
-// File: q8.cpp
-
 #include <iostream>
+#include <cstdlib>
+#include <ctime>
 using namespace std;
 
-class Book {
-public:
-    string title;
-    string isbn;
-    float price;
+const int TOTAL = 8, WIN = 4;
 
-    void input() {
-        cout << "Title: ";
-        cin >> title;
-        cout << "ISBN: ";
-        cin >> isbn;
-        cout << "Price: ";
-        cin >> price;
-    }
-
-    void display() {
-        cout << "Title: " << title
-             << " | ISBN: " << isbn
-             << " | Price: Rs." << price
-             << endl;
-    }
-};
-
-class Textbook : public Book {
-public:
-    string subject;
-    string level;
-
-    void input() {
-        Book::input();
-        cout << "Subject: ";
-        cin >> subject;
-        cout << "Academic Level (e.g. Undergraduate): ";
-        cin >> level;
-    }
-
-    void display() {
-        Book::display();
-        cout << "Subject: " << subject
-             << " | Level: " << level
-             << endl;
-    }
-};
-
-class Novel : public Book {
-public:
-    string genre;
-    string author;
-
-    void input() {
-        Book::input();
-        cout << "Genre: ";
-        cin >> genre;
-        cout << "Author: ";
-        cin >> author;
-    }
-
-    void display() {
-        Book::display();
-        cout << "Genre: " << genre
-             << " | Author: " << author
-             << endl;
-    }
-};
-
-int main() {
-    Textbook t;
-    cout << "\n--- Textbook Details ---\n";
-    t.input();
-    t.display();
-
-    Novel n;
-    cout << "\n--- Novel Details ---\n";
-    n.input();
-    n.display();
-
-    return 0;
-}
-```
-
-**Run:**
-```bash
-g++ -o q8 q8.cpp
-./q8
-```
-
----
-
-## Q9 – Shape → Rectangle & Triangle (Java)
-
-**Concept:** Method overriding using inheritance.
-
-```java
-// File: Q9.java
-
-class Shape {
-    double dim1;
-    double dim2;
-
-    Shape(double a, double b) {
-        dim1 = a;
-        dim2 = b;
-    }
-
-    double area() {
-        return 0;
-    }
+// Simulates sending a frame; returns true (ACK) with 70% probability
+bool transmit(int seq) {
+    bool ok = rand() % 10 < 7;
+    cout << "Frame " << seq << (ok ? " sent & ACKed\n" : " LOST\n");
+    return ok;
 }
 
-class Rectangle extends Shape {
-    Rectangle(double a, double b) {
-        super(a, b);
-    }
-
-    @Override
-    double area() {
-        return dim1 * dim2;
-    }
-}
-
-class Triangle extends Shape {
-    Triangle(double a, double b) {
-        super(a, b);
-    }
-
-    @Override
-    double area() {
-        return 0.5 * dim1 * dim2;
-    }
-}
-
-public class Q9 {
-    public static void main(String[] args) {
-        Shape r = new Rectangle(5, 3);
-        Shape t = new Triangle(5, 3);
-
-        System.out.println("Rectangle Area: " + r.area());
-        System.out.println("Triangle Area : " + t.area());
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q9.java
-java Q9
-```
-
----
-
-## Q13 – Vehicle → Car & Bike (Java)
-
-**Concept:** Method overriding with additional delay logic in subclasses.
-
-```java
-// File: Q13.java
-
-class Vehicle {
-    double speed;
-    double distance;
-
-    Vehicle(double s, double d) {
-        speed = s;
-        distance = d;
-    }
-
-    double travelTime() {
-        return distance / speed;
-    }
-}
-
-class Car extends Vehicle {
-    Car(double s, double d) {
-        super(s, d);
-    }
-
-    @Override
-    double travelTime() {
-        // Adds 0.5 hour traffic delay
-        return super.travelTime() + 0.5;
-    }
-}
-
-class Bike extends Vehicle {
-    Bike(double s, double d) {
-        super(s, d);
-    }
-
-    @Override
-    double travelTime() {
-        // Adds 1.0 hour for fuel stops/breaks
-        return super.travelTime() + 1.0;
-    }
-}
-
-public class Q13 {
-    public static void main(String[] args) {
-        Vehicle car  = new Car(60, 120);
-        Vehicle bike = new Bike(40, 120);
-
-        System.out.println("Car  travel time: " + car.travelTime()  + " hrs");
-        System.out.println("Bike travel time: " + bike.travelTime() + " hrs");
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q13.java
-java Q13
-```
-
----
-
----
-
-# PACKAGES & ACCESS MODIFIERS (Java)
-
----
-
-## Q3 – Unit Converter Package
-
-**Concept:** Creating and importing user-defined packages.
-
-```java
-// File: converter/UnitConverter.java
-
-package converter;
-
-public class UnitConverter {
-
-    public double kmToMiles(double km) {
-        return km * 0.621371;
-    }
-
-    public double celsiusToFahrenheit(double c) {
-        return (c * 9.0 / 5.0) + 32;
-    }
-
-    public double kgToPounds(double kg) {
-        return kg * 2.20462;
-    }
-
-    public double litersToGallons(double liters) {
-        return liters * 0.264172;
-    }
-}
-```
-
-```java
-// File: Q3.java  (place this OUTSIDE the converter folder)
-
-import converter.UnitConverter;
-import java.util.Scanner;
-
-public class Q3 {
-    public static void main(String[] args) {
-        UnitConverter uc = new UnitConverter();
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("Enter distance in km: ");
-        double km = sc.nextDouble();
-        System.out.println(km + " km = " + uc.kmToMiles(km) + " miles");
-
-        System.out.print("Enter temperature in Celsius: ");
-        double c = sc.nextDouble();
-        System.out.println(c + " C = " + uc.celsiusToFahrenheit(c) + " F");
-
-        System.out.print("Enter weight in kg: ");
-        double kg = sc.nextDouble();
-        System.out.println(kg + " kg = " + uc.kgToPounds(kg) + " lbs");
-
-        sc.close();
-    }
-}
-```
-
-**Run:**
-```bash
-# Folder structure required:
-# .
-# ├── Q3.java
-# └── converter/
-#     └── UnitConverter.java
-
-mkdir converter
-# Place UnitConverter.java inside converter/
-
-javac converter/UnitConverter.java
-javac Q3.java
-java Q3
-```
-
----
-
-## Q14 – Calculator Package
-
-**Concept:** Arithmetic operations inside a package.
-
-```java
-// File: calc/Calculator.java
-
-package calc;
-
-public class Calculator {
-
-    public double add(double a, double b) {
-        return a + b;
-    }
-
-    public double subtract(double a, double b) {
-        return a - b;
-    }
-
-    public double multiply(double a, double b) {
-        return a * b;
-    }
-
-    public double divide(double a, double b) {
-        if (b == 0) {
-            System.out.println("Error: Division by zero!");
-            return 0;
+void goBackN() {
+    int base = 0;
+    while (base < TOTAL) {
+        bool allAck = true;
+        // Send a full window starting from 'base'
+        for (int i = base; i < base + WIN && i < TOTAL; i++) {
+            if (!transmit(i)) { allAck = false; break; }
         }
-        return a / b;
-    }
-}
-```
-
-```java
-// File: Q14.java
-
-import calc.Calculator;
-import java.util.Scanner;
-
-public class Q14 {
-    public static void main(String[] args) {
-        Calculator c = new Calculator();
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("Enter first number: ");
-        double a = sc.nextDouble();
-        System.out.print("Enter second number: ");
-        double b = sc.nextDouble();
-
-        System.out.println("Add      : " + c.add(a, b));
-        System.out.println("Subtract : " + c.subtract(a, b));
-        System.out.println("Multiply : " + c.multiply(a, b));
-        System.out.println("Divide   : " + c.divide(a, b));
-
-        sc.close();
-    }
-}
-```
-
-**Run:**
-```bash
-mkdir calc
-# Place Calculator.java inside calc/
-
-javac calc/Calculator.java
-javac Q14.java
-java Q14
-```
-
----
-
-## Q24 – Hospital Package with Access Modifiers
-
-**Concept:** `protected` members accessible in subclass from another package.
-
-```java
-// File: hospital/Patient.java
-
-package hospital;
-
-public class Patient {
-    protected String name;
-    protected int age;
-    protected String ailment;
-
-    public Patient(String n, int a, String ail) {
-        name    = n;
-        age     = a;
-        ailment = ail;
-    }
-
-    public void display() {
-        System.out.println("Patient Name  : " + name);
-        System.out.println("Age           : " + age);
-        System.out.println("Ailment       : " + ailment);
-    }
-}
-```
-
-```java
-// File: Q24.java
-
-import hospital.Patient;
-
-class Doctor extends Patient {
-    String specialization;
-
-    Doctor(String n, int a, String ail, String s) {
-        super(n, a, ail);
-        specialization = s;
-    }
-
-    @Override
-    public void display() {
-        super.display();
-        System.out.println("Specialization: " + specialization);
+        if (allAck) base += WIN;   // Slide the window forward
+        else cout << "Retransmitting from frame " << base << "\n";
     }
 }
 
-public class Q24 {
-    public static void main(String[] args) {
-        Doctor d = new Doctor("Dr. Mehta", 45, "Fever", "General Medicine");
-        d.display();
-    }
+void selectiveRepeat() {
+    bool ack[TOTAL] = {};
+    // First pass: try each frame once
+    for (int i = 0; i < TOTAL; i++)
+        if (!ack[i]) ack[i] = transmit(i);
+    // Retry only unacknowledged frames
+    for (int i = 0; i < TOTAL; i++)
+        while (!ack[i]) ack[i] = transmit(i);
 }
-```
-
-**Run:**
-```bash
-mkdir hospital
-# Place Patient.java inside hospital/
-
-javac hospital/Patient.java
-javac Q24.java
-java Q24
-```
-
----
-
----
-
-# OPERATOR OVERLOADING (C++)
-
----
-
-## Q4 / Q11 / Q17 – Complex Number with operator+ (Menu-Driven)
-
-> Q4, Q11, and Q17 are identical in logic. One solution covers all three.
-
-**Concept:** Constructor overloading + `operator+` overloading with a menu loop.
-
-```cpp
-// File: q4.cpp
-
-#include<iostream>
-using namespace std;
-
-class Complex {
-public:
-    float r, i;
-
-    // constructor (default + parameterized)
-    Complex(float x = 0, float y = 0) {
-        r = x;
-        i = y;
-    }
-
-    // operator overloading
-    Complex operator+(Complex c) {
-        return Complex(r + c.r, i + c.i);
-    }
-
-    void show() {
-        cout << r << "+" << i << "i\n";
-    }
-};
 
 int main() {
-    Complex c1, c2, c3;
+    srand(time(0));
     int ch;
-
-    do {
-        cout << "\n1.Input  2.Add  3.Display  0.Exit\n";
-        cin >> ch;
-
-        if (ch == 1) {
-            cin >> c1.r >> c1.i >> c2.r >> c2.i;
-        }
-        else if (ch == 2) {
-            c3 = c1 + c2;
-            c3.show();
-        }
-        else if (ch == 3) {
-            c1.show();
-            c2.show();
-        }
-
-    } while (ch != 0);
+    cout << "1=Go-Back-N  2=Selective Repeat: ";
+    cin >> ch;
+    if (ch == 1) goBackN();
+    else selectiveRepeat();
 }
 ```
 
-**Run:**
-```bash
-g++ -o q4 q4.cpp
-./q4
-```
+### Code-Level Explanation
+
+| Block | What it does |
+|---|---|
+| `rand() % 10 < 7` | 70% chance of success — simulates lossy channel. |
+| `goBackN()` — inner for loop | Sends frames `[base, base+WIN)`. Stops immediately on first loss. |
+| `allAck` flag | If any frame in window failed, `allAck` stays false → retransmit entire window from `base`. |
+| `base += WIN` | Window slides forward only when all frames in it are ACKed. |
+| `selectiveRepeat()` — first loop | Single pass; records which frames were ACKed. |
+| `while (!ack[i])` | Keeps retransmitting only that specific frame until it succeeds. |
 
 ---
 
-## Q21 – 2×2 Matrix with +, -, * Overloading
+## Practical 6 — IP Subnetting (CIDR)
 
-**Concept:** Operator overloading for matrix arithmetic.
+### Concept
+
+**Subnetting** divides a large IP address block into smaller sub-networks. **CIDR (Classless Inter-Domain Routing)** notation like `192.168.1.0/24` specifies how many leading bits form the **network portion**.
+
+Key terms:
+- **Subnet Mask:** Has 1s for network bits, 0s for host bits. `/24` → `255.255.255.0`
+- **Network Address:** IP ANDed with mask — identifies the subnet.
+- **Broadcast Address:** Network address ORed with inverted mask — last address in subnet.
+- **Host Range:** All addresses between network+1 and broadcast-1.
+- **Usable Hosts:** `2^(32-cidr) - 2` (subtract network and broadcast).
+
+---
+
+### Code
 
 ```cpp
-// File: q21.cpp
-
 #include <iostream>
 using namespace std;
 
-class Matrix {
-    int m[2][2];
-
-public:
-    // Initialize all elements to 0
-    Matrix() {
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 2; j++)
-                m[i][j] = 0;
-    }
-
-    void input() {
-        cout << "Enter 4 elements row by row:\n";
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 2; j++)
-                cin >> m[i][j];
-    }
-
-    void display() {
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 2; j++)
-                cout << m[i][j] << " ";
-            cout << endl;
-        }
-    }
-
-    Matrix operator+(const Matrix& b) {
-        Matrix r;
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 2; j++)
-                r.m[i][j] = m[i][j] + b.m[i][j];
-        return r;
-    }
-
-    Matrix operator-(const Matrix& b) {
-        Matrix r;
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 2; j++)
-                r.m[i][j] = m[i][j] - b.m[i][j];
-        return r;
-    }
-
-    Matrix operator*(const Matrix& b) {
-        Matrix r;
-        for (int i = 0; i < 2; i++)
-            for (int j = 0; j < 2; j++)
-                for (int k = 0; k < 2; k++)
-                    r.m[i][j] += m[i][k] * b.m[k][j];
-        return r;
-    }
-};
-
-int main() {
-    Matrix a, b;
-
-    cout << "--- Matrix A ---\n";
-    a.input();
-
-    cout << "--- Matrix B ---\n";
-    b.input();
-
-    cout << "\nAddition:\n";
-    (a + b).display();
-
-    cout << "\nSubtraction:\n";
-    (a - b).display();
-
-    cout << "\nMultiplication:\n";
-    (a * b).display();
-
-    return 0;
-}
-```
-
-**Run:**
-```bash
-g++ -o q21 q21.cpp
-./q21
-```
-
----
-
----
-
-# EXCEPTION HANDLING (C++)
-
----
-
-## Q5 – Student Class with DOB Validation + File I/O
-
-**Concept:** `throw`, `try-catch`, file read/write with `fstream`.
-
-```cpp
-// File: q5.cpp
-
-#include <iostream>
-#include <fstream>
-using namespace std;
-
-class Student {
-public:
-    string name;
-    int roll;
-    int day, month, year;
-
-    void input() {
-        cout << "Name: ";
-        cin >> name;
-        cout << "Roll Number: ";
-        cin >> roll;
-        cout << "Date of Birth (day month year): ";
-        cin >> day >> month >> year;
-
-        if (day < 1 || day > 31)
-            throw runtime_error("Invalid day! Must be between 1 and 31.");
-        if (month < 1 || month > 12)
-            throw runtime_error("Invalid month! Must be between 1 and 12.");
-    }
-
-    void saveToFile() {
-        ofstream f("students.txt", ios::app);
-        f << name << " " << roll << " "
-          << day << "/" << month << "/" << year << "\n";
-        cout << "Record saved successfully.\n";
-    }
-
-    void display() {
-        cout << "Name : " << name
-             << " | Roll: " << roll
-             << " | DOB: " << day << "/" << month << "/" << year
-             << endl;
-    }
-};
-
-void loadFromFile() {
-    ifstream f("students.txt");
-    string line;
-    cout << "\n--- Student Records from File ---\n";
-    while (getline(f, line)) {
-        cout << line << endl;
-    }
+// Converts a 32-bit integer to dotted-decimal IP string
+string toIP(unsigned int n) {
+    return to_string((n>>24)&255) + "." +
+           to_string((n>>16)&255) + "." +
+           to_string((n>> 8)&255) + "." +
+           to_string( n     &255);
 }
 
 int main() {
-    Student s;
-    try {
-        s.input();
-        s.display();
-        s.saveToFile();
-    } catch (const exception& e) {
-        cout << "Error: " << e.what() << endl;
-    }
+    string ip;
+    int cidr, a, b, c, d;
+    cout << "Enter IP and CIDR (e.g. 192.168.1.1 24): ";
+    cin >> ip >> cidr;
 
-    loadFromFile();
-    return 0;
+    // Parse dotted-decimal into 4 octets
+    sscanf(ip.c_str(), "%d.%d.%d.%d", &a, &b, &c, &d);
+
+    // Pack 4 octets into a single 32-bit integer
+    unsigned int ipInt    = (a<<24)|(b<<16)|(c<<8)|d;
+
+    // Subnet mask: 32 leading 1-bits, shifted right by host bits
+    unsigned int mask     = cidr ? (~0u << (32-cidr)) : 0;
+
+    unsigned int network  = ipInt & mask;           // AND gives network address
+    unsigned int broadcast = network | ~mask;       // OR with inverted mask gives broadcast
+
+    cout << "Subnet Mask   : " << toIP(mask)        << "\n";
+    cout << "Network Addr  : " << toIP(network)      << "\n";
+    cout << "Broadcast Addr: " << toIP(broadcast)    << "\n";
+    cout << "Host Range    : " << toIP(network+1) << " - " << toIP(broadcast-1) << "\n";
+    cout << "Usable Hosts  : " << (1 << (32-cidr)) - 2 << "\n";
 }
 ```
 
-**Run:**
-```bash
-g++ -o q5 q5.cpp
-./q5
-# students.txt will be created in the same directory
-```
+### Code-Level Explanation
+
+| Expression | Meaning |
+|---|---|
+| `(n>>24)&255` | Right-shift 24 bits, mask lowest byte → extracts 1st octet. |
+| `(a<<24)\|(b<<16)\|(c<<8)\|d` | Packs 4 octets into one 32-bit int for bitwise operations. |
+| `~0u << (32-cidr)` | All-ones integer left-shifted → network bits are 1, host bits are 0. |
+| `ipInt & mask` | Zeroes out host bits → network address. |
+| `network \| ~mask` | Sets all host bits to 1 → broadcast address. |
+| `(1 << (32-cidr)) - 2` | Total addresses in subnet minus 2 (network + broadcast). |
 
 ---
 
-## Q7 – Employee Class with DOB Validation + File I/O
+## Practical 7 — Dijkstra's Shortest Path Algorithm
 
-**Concept:** Same as Q5 but with mobile number instead of roll number.
+### Concept
 
-```cpp
-// File: q7.cpp
+**Dijkstra's Algorithm** finds the shortest path from a single source node to all other nodes in a weighted graph with non-negative edge weights.
 
-#include <iostream>
-#include <fstream>
-using namespace std;
+**How it works:**
+1. Set distance to source = 0, all others = ∞.
+2. Pick the unvisited node with the smallest known distance (`u`).
+3. For each unvisited neighbour `v` of `u`: if `dist[u] + weight(u,v) < dist[v]`, update `dist[v]` (**relaxation**).
+4. Mark `u` as visited (its distance is now final).
+5. Repeat until all nodes are visited.
 
-class Employee {
-public:
-    string name;
-    long long mobile;
-    int day, month, year;
-
-    void input() {
-        cout << "Name: ";
-        cin >> name;
-        cout << "Mobile Number: ";
-        cin >> mobile;
-        cout << "Date of Birth (day month year): ";
-        cin >> day >> month >> year;
-
-        if (day < 1 || day > 31)
-            throw runtime_error("Invalid day! Must be between 1 and 31.");
-        if (month < 1 || month > 12)
-            throw runtime_error("Invalid month! Must be between 1 and 12.");
-    }
-
-    void saveToFile() {
-        ofstream f("employees.txt", ios::app);
-        f << name << " " << mobile << " "
-          << day << "/" << month << "/" << year << "\n";
-        cout << "Record saved successfully.\n";
-    }
-
-    void display() {
-        cout << "Name  : " << name
-             << " | Mobile: " << mobile
-             << " | DOB: " << day << "/" << month << "/" << year
-             << endl;
-    }
-};
-
-void loadFromFile() {
-    ifstream f("employees.txt");
-    string line;
-    cout << "\n--- Employee Records from File ---\n";
-    while (getline(f, line)) {
-        cout << line << endl;
-    }
-}
-
-int main() {
-    Employee e;
-    try {
-        e.input();
-        e.display();
-        e.saveToFile();
-    } catch (const exception& ex) {
-        cout << "Error: " << ex.what() << endl;
-    }
-
-    loadFromFile();
-    return 0;
-}
-```
-
-**Run:**
-```bash
-g++ -o q7 q7.cpp
-./q7
-# employees.txt will be created in the same directory
-```
+Used in: routing protocols (OSPF), GPS navigation, network topology.
 
 ---
 
-## Q22 – BankAccount with Exception Handling
-
-**Concept:** Throwing exceptions from constructor and member functions.
+### Code
 
 ```cpp
-// File: q22.cpp
-
 #include <iostream>
 using namespace std;
 
-class BankAccount {
-public:
-    int accountNumber;
-    string ownerName;
-    double balance;
-
-    BankAccount(int acc, string name, double deposit) {
-        if (deposit < 500)
-            throw runtime_error("Initial deposit must be at least Rs. 500!");
-        accountNumber = acc;
-        ownerName     = name;
-        balance       = deposit;
-        cout << "Account created for " << ownerName
-             << " with balance Rs. " << balance << endl;
-    }
-
-    void withdraw(double amount) {
-        if (amount > balance)
-            throw runtime_error("Insufficient balance!");
-        balance -= amount;
-        cout << "Withdrawn: Rs. " << amount
-             << " | Remaining Balance: Rs. " << balance << endl;
-    }
-
-    void displayBalance() {
-        cout << "Balance for " << ownerName << ": Rs. " << balance << endl;
-    }
-};
+const int INF = 1e9, MAXN = 100;
+int g[MAXN][MAXN], dist[MAXN];
+bool vis[MAXN];
 
 int main() {
-    // Test 1: Valid account with valid withdrawal
-    try {
-        BankAccount acc1(101, "Priya", 1000);
-        acc1.withdraw(300);
-        acc1.withdraw(900);  // will throw insufficient balance
-    } catch (const exception& e) {
-        cout << "Error: " << e.what() << endl;
+    int n, e;
+    cin >> n >> e;
+
+    // Initialize adjacency matrix
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            g[i][j] = (i == j) ? 0 : INF;
+
+    // Read edges (undirected)
+    for (int i = 0; i < e; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        g[u][v] = g[v][u] = w;
     }
 
-    cout << endl;
+    int src;
+    cin >> src;
 
-    // Test 2: Invalid initial deposit
-    try {
-        BankAccount acc2(102, "Rahul", 100);  // will throw
-    } catch (const exception& e) {
-        cout << "Error: " << e.what() << endl;
+    // Initialize distances
+    for (int i = 0; i < n; i++) dist[i] = INF, vis[i] = false;
+    dist[src] = 0;
+
+    // Main Dijkstra loop — runs n-1 times
+    for (int i = 0; i < n - 1; i++) {
+        // Find unvisited node with minimum distance
+        int u = -1;
+        for (int j = 0; j < n; j++)
+            if (!vis[j] && (u == -1 || dist[j] < dist[u])) u = j;
+
+        vis[u] = true;   // Lock in u's shortest distance
+
+        // Relax neighbours of u
+        for (int v = 0; v < n; v++)
+            if (g[u][v] != INF && !vis[v] && dist[u] + g[u][v] < dist[v])
+                dist[v] = dist[u] + g[u][v];
     }
 
-    return 0;
+    cout << "Shortest distances from node " << src << ":\n";
+    for (int i = 0; i < n; i++)
+        cout << "To " << i << ": "
+             << (dist[i] == INF ? "unreachable" : to_string(dist[i])) << "\n";
 }
 ```
 
-**Run:**
-```bash
-g++ -o q22 q22.cpp
-./q22
+### Code-Level Explanation
+
+| Block | What it does |
+|---|---|
+| `g[i][j] = INF` | Represents no edge between i and j (large sentinel value). |
+| `g[i][i] = 0` | Distance from a node to itself is 0. |
+| Min-distance scan | Linear scan over all unvisited nodes to find the one with smallest `dist` — O(n²) overall. |
+| `vis[u] = true` | Once processed, a node's distance is finalized (greedy property). |
+| Relaxation condition | If going through `u` gives a shorter path to `v`, update `dist[v]`. |
+| `dist[i] == INF` | Node `i` was never reached → unreachable from source. |
+
+---
+
+## Practical 8 — UDP File Transfer (Client-Server)
+
+### Concept
+
+**UDP (User Datagram Protocol)** is a connectionless transport layer protocol. Unlike TCP, it does not guarantee delivery, ordering, or duplicate protection — but it is fast and low-overhead, making it suitable for file transfer demos and real-time applications.
+
+This practical implements a simple file transfer:
+- **Client (sender):** Opens file, sends filename first, then file contents in chunks, then an `END` sentinel.
+- **Server (receiver):** Listens for the filename, collects chunks until `END`, saves the file.
+
+---
+
+### Code
+
+**Client (Sender)**
+```python
+import socket, sys
+
+CHUNK = 1024
+HOST, PORT = "127.0.0.1", 5001
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)  # UDP socket
+file = sys.argv[1]   # Filename from command-line argument
+
+# Send filename so receiver knows what to save as
+sock.sendto(file.encode(), (HOST, PORT))
+
+# Send file content in 1024-byte chunks
+with open(file, "rb") as f:
+    while chunk := f.read(CHUNK):     # Walrus operator: read and check non-empty
+        sock.sendto(chunk, (HOST, PORT))
+
+sock.sendto(b"END", (HOST, PORT))    # Sentinel to signal end of file
+print(f"Sent: {file}")
+sock.close()
 ```
 
----
+**Server (Receiver)**
+```python
+import socket, os
 
----
+PORT = 5001
+SAVE = "./received"
+os.makedirs(SAVE, exist_ok=True)   # Create output directory if needed
 
-# FILE HANDLING (C++)
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind(("0.0.0.0", PORT))       # Listen on all interfaces
+print(f"Listening on port {PORT}...")
 
----
+# First packet contains the filename
+data, addr = sock.recvfrom(4096)
+filename = data.decode()
+print(f"Receiving: {filename}")
 
-## Q20 – Product Binary File Operations
+# Collect chunks and write to file
+with open(f"{SAVE}/{filename}", "wb") as f:
+    while True:
+        data, _ = sock.recvfrom(4096)
+        if data == b"END":
+            break
+        f.write(data)
 
-**Concept:** `fstream` binary read/write, in-place record update.
-
-> **Note:** Uses `char name[30]` (not `string`) because `string` has variable size and can't be reliably binary-written as a fixed-size block.
-
-```cpp
-// File: q20.cpp
-
-#include <iostream>
-#include <fstream>
-#include <cstring>
-using namespace std;
-
-class Product {
-public:
-    int  productID;
-    char name[30];
-    int  stockQuantity;
-};
-
-void addProduct(Product p) {
-    ofstream f("products.bin", ios::binary | ios::app);
-    f.write((char*)&p, sizeof(p));
-    cout << "Product added: " << p.name << endl;
-}
-
-void searchAndUpdate(int id, int newQty) {
-    fstream f("products.bin", ios::binary | ios::in | ios::out);
-    Product p;
-
-    while (f.read((char*)&p, sizeof(p))) {
-        if (p.productID == id) {
-            p.stockQuantity = newQty;
-            f.seekp(-(int)sizeof(p), ios::cur);
-            f.write((char*)&p, sizeof(p));
-            cout << "Stock updated for Product ID " << id
-                 << " to " << newQty << endl;
-            return;
-        }
-    }
-    cout << "Product ID " << id << " not found.\n";
-}
-
-void displayOutOfStock() {
-    ifstream f("products.bin", ios::binary);
-    Product p;
-    cout << "\n--- Out of Stock Products ---\n";
-    bool found = false;
-    while (f.read((char*)&p, sizeof(p))) {
-        if (p.stockQuantity == 0) {
-            cout << "ID: " << p.productID
-                 << " | Name: " << p.name << endl;
-            found = true;
-        }
-    }
-    if (!found) cout << "None.\n";
-}
-
-void displayAll() {
-    ifstream f("products.bin", ios::binary);
-    Product p;
-    cout << "\n--- All Products ---\n";
-    while (f.read((char*)&p, sizeof(p))) {
-        cout << "ID: " << p.productID
-             << " | Name: " << p.name
-             << " | Stock: " << p.stockQuantity
-             << endl;
-    }
-}
-
-int main() {
-    Product p1, p2, p3;
-
-    p1.productID = 1; p1.stockQuantity = 0; strncpy(p1.name, "Pen",      29);
-    p2.productID = 2; p2.stockQuantity = 5; strncpy(p2.name, "Notebook", 29);
-    p3.productID = 3; p3.stockQuantity = 0; strncpy(p3.name, "Ruler",    29);
-
-    addProduct(p1);
-    addProduct(p2);
-    addProduct(p3);
-
-    displayAll();
-    searchAndUpdate(2, 10);
-    displayAll();
-    displayOutOfStock();
-
-    return 0;
-}
+print(f"Saved to {SAVE}/{filename}")
+sock.close()
 ```
 
-**Run:**
-```bash
-g++ -o q20 q20.cpp
-./q20
-# products.bin will be created in the same directory
-```
+### Code-Level Explanation
+
+| Element | What it does |
+|---|---|
+| `SOCK_DGRAM` | Creates a UDP socket (vs `SOCK_STREAM` for TCP). |
+| `sock.bind(("0.0.0.0", PORT))` | Listens on all network interfaces on the given port. |
+| `file.encode()` | Converts filename string to bytes for UDP transmission. |
+| `while chunk := f.read(CHUNK)` | Python walrus operator — reads and assigns; loop ends when empty (EOF). |
+| `b"END"` sentinel | Simple application-level signal since UDP has no built-in EOF concept. |
+| `sock.recvfrom(4096)` | Returns `(data, sender_address)` — up to 4096 bytes per call. |
+| `os.makedirs(SAVE, exist_ok=True)` | Creates directory without error if it already exists. |
 
 ---
 
----
+## Practical 9 — UDP File Transfer (Extended Version with Comments)
 
-# INTERFACES (Java)
+### Concept
 
----
+Same concept as Practical 8 but written more explicitly with comments explaining each line. This version uses port `5005`, reads `sample.mp4`, and uses `b"EOF"` as the sentinel — demonstrating that the naming is arbitrary as long as sender and receiver agree.
 
-## Q12 – Sortable Interface: BubbleSort & SelectionSort
-
-**Concept:** Interface implementation with two sorting algorithms.
-
-```java
-// File: Q12.java
-
-interface Sortable {
-    void sort(int[] arr);
-}
-
-class BubbleSort implements Sortable {
-    @Override
-    public void sort(int[] arr) {
-        int n = arr.length;
-        for (int i = 0; i < n - 1; i++) {
-            for (int j = 0; j < n - 1 - i; j++) {
-                if (arr[j] > arr[j + 1]) {
-                    int temp = arr[j];
-                    arr[j]   = arr[j + 1];
-                    arr[j + 1] = temp;
-                }
-            }
-        }
-    }
-}
-
-class SelectionSort implements Sortable {
-    @Override
-    public void sort(int[] arr) {
-        int n = arr.length;
-        for (int i = 0; i < n - 1; i++) {
-            int minIdx = i;
-            for (int j = i + 1; j < n; j++) {
-                if (arr[j] < arr[minIdx])
-                    minIdx = j;
-            }
-            int temp    = arr[i];
-            arr[i]      = arr[minIdx];
-            arr[minIdx] = temp;
-        }
-    }
-}
-
-public class Q12 {
-    static void printArray(int[] arr) {
-        for (int x : arr)
-            System.out.print(x + " ");
-        System.out.println();
-    }
-
-    public static void main(String[] args) {
-        int[] a = {5, 2, 8, 1, 9};
-        int[] b = {5, 2, 8, 1, 9};
-
-        new BubbleSort().sort(a);
-        System.out.print("BubbleSort:    ");
-        printArray(a);
-
-        new SelectionSort().sort(b);
-        System.out.print("SelectionSort: ");
-        printArray(b);
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q12.java
-java Q12
-```
+Key UDP behaviour to note:
+- Each `sendto()` call creates one datagram.
+- Datagrams may arrive out of order or be lost (no built-in recovery here).
+- For production use, a sequence number and ACK mechanism would be added on top.
 
 ---
 
-## Q18 – Searchable Interface: Linear & Binary Search
+### Code
 
-**Concept:** Interface with two different search algorithm implementations.
+**Server (Receiver)**
+```python
+import socket
 
-```java
-// File: Q18.java
+SERVER_IP   = "0.0.0.0"   # Listen on all interfaces
+SERVER_PORT = 5005
+BUFFER_SIZE = 4096         # Max bytes per datagram
 
-interface Searchable {
-    void search(int[] arr, int key);
-}
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+sock.bind((SERVER_IP, SERVER_PORT))
+print("Server listening on port", SERVER_PORT)
 
-class LinearSearch implements Searchable {
-    @Override
-    public void search(int[] arr, int key) {
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] == key) {
-                System.out.println("Linear Search: Found " + key + " at index " + i);
-                return;
-            }
-        }
-        System.out.println("Linear Search: " + key + " not found.");
-    }
-}
+file = open("received_file", "wb")  # Open file for binary writing
 
-class BinarySearch implements Searchable {
-    @Override
-    public void search(int[] arr, int key) {
-        int lo = 0, hi = arr.length - 1;
+while True:
+    data, addr = sock.recvfrom(BUFFER_SIZE)  # Block until a datagram arrives
 
-        while (lo <= hi) {
-            int mid = (lo + hi) / 2;
-            if (arr[mid] == key) {
-                System.out.println("Binary Search: Found " + key + " at index " + mid);
-                return;
-            } else if (arr[mid] < key) {
-                lo = mid + 1;
-            } else {
-                hi = mid - 1;
-            }
-        }
-        System.out.println("Binary Search: " + key + " not found.");
-    }
-}
+    if data == b"EOF":           # Application-level end signal
+        print("File received successfully.")
+        break
 
-public class Q18 {
-    public static void main(String[] args) {
-        int[] arr = {1, 3, 5, 7, 9};
+    file.write(data)             # Write raw bytes directly to file
 
-        new LinearSearch().search(arr, 5);
-        new LinearSearch().search(arr, 4);
-
-        new BinarySearch().search(arr, 7);
-        new BinarySearch().search(arr, 6);
-    }
-}
+file.close()
+sock.close()
 ```
 
-**Run:**
-```bash
-javac Q18.java
-java Q18
+**Client (Sender)**
+```python
+import socket
+
+SERVER_IP   = "192.168.1.10"   # IP of receiver machine
+SERVER_PORT = 5005
+BUFFER_SIZE = 4096
+FILE_NAME   = "sample.mp4"
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+
+with open(FILE_NAME, "rb") as file:
+    while True:
+        chunk = file.read(BUFFER_SIZE)    # Read next 4KB chunk
+        if not chunk:
+            break                          # Reached end of file
+        sock.sendto(chunk, (SERVER_IP, SERVER_PORT))
+
+sock.sendto(b"EOF", (SERVER_IP, SERVER_PORT))   # Signal completion
+print("File sent successfully.")
+sock.close()
 ```
+
+### Code-Level Explanation
+
+| Element | Explanation |
+|---|---|
+| `socket.AF_INET` | IPv4 address family. |
+| `socket.SOCK_DGRAM` | UDP — no connection, no guarantee of delivery. |
+| `sock.recvfrom(BUFFER_SIZE)` | Receives one UDP packet at a time; blocks until data arrives. |
+| `open("received_file", "wb")` | Binary write mode — handles any file type (images, video, binary). |
+| `file.read(BUFFER_SIZE)` | Reads file in 4096-byte chunks matching the datagram size. |
+| `b"EOF"` sentinel | Byte string used as stop signal; receiver checks for it after each packet. |
 
 ---
 
-## Q25 – Payment Interface with Abstract Transaction
+## Practical 10 — DNS Lookup (Forward & Reverse)
 
-**Concept:** Interface + abstract class + composition.
+### Concept
 
-```java
-// File: Q25.java
+**DNS (Domain Name System)** translates human-readable hostnames (like `google.com`) to IP addresses and vice versa.
 
-interface Payment {
-    void processPayment(double amount);
-}
+- **Forward DNS:** hostname → IP address(es). Used by browsers and applications to connect to servers.
+- **Reverse DNS:** IP address → hostname. Used for logging, spam filtering, and diagnostics.
 
-class CreditCardPayment implements Payment {
-    @Override
-    public void processPayment(double amount) {
-        System.out.println("Processing Credit Card payment of Rs. " + amount);
-    }
-}
-
-class UPIPayment implements Payment {
-    @Override
-    public void processPayment(double amount) {
-        System.out.println("Processing UPI payment of Rs. " + amount);
-    }
-}
-
-abstract class Transaction {
-    String  transactionID;
-    Payment payment;
-
-    Transaction(String id, Payment p) {
-        transactionID = id;
-        payment       = p;
-    }
-
-    void execute(double amount) {
-        System.out.print("Transaction ID: " + transactionID + " -> ");
-        payment.processPayment(amount);
-    }
-}
-
-class OnlineTransaction extends Transaction {
-    OnlineTransaction(String id, Payment p) {
-        super(id, p);
-    }
-}
-
-public class Q25 {
-    public static void main(String[] args) {
-        new OnlineTransaction("TXN001", new CreditCardPayment()).execute(1500.0);
-        new OnlineTransaction("TXN002", new UPIPayment()).execute(350.0);
-    }
-}
-```
-
-**Run:**
-```bash
-javac Q25.java
-java Q25
-```
+Python's `socket` module provides built-in DNS functions:
+- `socket.gethostbyname_ex(host)` → returns `(hostname, aliases, [IP list])`
+- `socket.gethostbyaddr(ip)` → returns `(hostname, aliases, [IP list])` for reverse lookup
 
 ---
 
----
+### Code
 
-# TEMPLATES (C++)
+```python
+import socket
 
----
+def dns_lookup():
+    inp = input("Enter IP address or hostname: ").strip()
+    try:
+        if inp[0].isdigit():
+            # Input starts with digit → treat as IP → reverse DNS lookup
+            hostname, _, ips = socket.gethostbyaddr(inp)
+            print(f"Input      : {inp}")
+            print(f"Hostname   : {hostname}")
+            print(f"IP Address : {inp}")
+        else:
+            # Input is a hostname → forward DNS lookup
+            _, _, ips = socket.gethostbyname_ex(inp)
+            # Also do reverse lookup on first IP to confirm canonical hostname
+            hostname_resolved = socket.gethostbyaddr(ips[0])[0] if ips else inp
+            print(f"Input      : {inp}")
+            print(f"Hostname   : {hostname_resolved}")
+            print(f"All IPs    :")
+            for ip in ips:
+                print(f"  → {ip}")
 
-## Q6 – Generic Vector Class Template
+    except socket.herror as e:
+        print(f"Reverse DNS failed : {e}")   # IP → hostname failed (no PTR record)
+    except socket.gaierror as e:
+        print(f"DNS resolution failed : {e}") # hostname → IP failed (NXDOMAIN etc.)
 
-**Concept:** Class templates with type parameter `T`.
-
-```cpp
-// File: q6.cpp
-
-#include <iostream>
-using namespace std;
-
-template <class T>
-class Vector {
-    T   arr[100];
-    int size;
-
-public:
-    Vector(int s) : size(s) {}
-
-    void create() {
-        cout << "Enter " << size << " elements:\n";
-        for (int i = 0; i < size; i++) {
-            cout << "Element [" << i << "]: ";
-            cin >> arr[i];
-        }
-    }
-
-    void modify(int index, T value) {
-        if (index >= 0 && index < size)
-            arr[index] = value;
-        else
-            cout << "Index out of range!\n";
-    }
-
-    void multiply(T scalar) {
-        for (int i = 0; i < size; i++)
-            arr[i] *= scalar;
-    }
-
-    void display() {
-        cout << "Vector: [ ";
-        for (int i = 0; i < size; i++)
-            cout << arr[i] << " ";
-        cout << "]\n";
-    }
-};
-
-int main() {
-    Vector<int> v(4);
-    v.create();
-    cout << "\nAfter creation: ";
-    v.display();
-
-    v.modify(0, 99);
-    cout << "After modify index 0 to 99: ";
-    v.display();
-
-    v.multiply(2);
-    cout << "After multiplying by 2: ";
-    v.display();
-
-    return 0;
-}
+dns_lookup()
 ```
 
-**Run:**
-```bash
-g++ -o q6 q6.cpp
-./q6
-```
+### Code-Level Explanation
+
+| Element | Explanation |
+|---|---|
+| `inp[0].isdigit()` | Quick check: if first character is a digit, assume it's an IP address. |
+| `socket.gethostbyaddr(inp)` | Reverse DNS — sends PTR query; returns `(hostname, alias_list, address_list)`. |
+| `socket.gethostbyname_ex(inp)` | Forward DNS — returns all IPs for the hostname (load-balanced servers may have many). |
+| `ips[0]` for reverse | Gets canonical hostname from the first resolved IP for confirmation. |
+| `socket.herror` | Error class for reverse DNS failures (no PTR record found). |
+| `socket.gaierror` | Error class for forward DNS failures (bad hostname, no network, etc.). |
 
 ---
 
-## Q15 – Generic ScoreList Class Template
+## Summary Table
 
-**Concept:** Same structure as Q6 but for score lists (demonstrates with `float`).
-
-```cpp
-// File: q15.cpp
-
-#include <iostream>
-using namespace std;
-
-template <class T>
-class ScoreList {
-    T   arr[100];
-    int size;
-
-public:
-    ScoreList(int s) : size(s) {}
-
-    void create() {
-        cout << "Enter " << size << " scores:\n";
-        for (int i = 0; i < size; i++) {
-            cout << "Score [" << i + 1 << "]: ";
-            cin >> arr[i];
-        }
-    }
-
-    void modify(int index, T value) {
-        if (index >= 0 && index < size)
-            arr[index] = value;
-        else
-            cout << "Index out of range!\n";
-    }
-
-    void multiply(T scalar) {
-        for (int i = 0; i < size; i++)
-            arr[i] *= scalar;
-    }
-
-    void display() {
-        cout << "Scores: [ ";
-        for (int i = 0; i < size; i++)
-            cout << arr[i] << " ";
-        cout << "]\n";
-    }
-};
-
-int main() {
-    ScoreList<float> s(3);
-    s.create();
-    cout << "\nOriginal: ";
-    s.display();
-
-    s.modify(1, 95.5f);
-    cout << "After modifying index 1 to 95.5: ";
-    s.display();
-
-    s.multiply(1.1f);
-    cout << "After multiplying by 1.1 (bonus): ";
-    s.display();
-
-    return 0;
-}
-```
-
-**Run:**
-```bash
-g++ -o q15 q15.cpp
-./q15
-```
-
----
-
-## Q23 – Generic Stack Class Template
-
-**Concept:** Stack data structure with templates — works for `int` and `string`.
-
-```cpp
-// File: q23.cpp
-
-#include <iostream>
-using namespace std;
-
-template <class T>
-class Stack {
-    T   arr[100];
-    int top;
-
-public:
-    Stack() : top(-1) {}
-
-    void push(T val) {
-        if (top >= 99) {
-            cout << "Stack Overflow!\n";
-            return;
-        }
-        arr[++top] = val;
-        cout << val << " pushed.\n";
-    }
-
-    void pop() {
-        if (top < 0) {
-            cout << "Stack is empty!\n";
-            return;
-        }
-        cout << arr[top--] << " popped.\n";
-    }
-
-    bool isEmpty() {
-        return top == -1;
-    }
-
-    void display() {
-        if (isEmpty()) {
-            cout << "Stack is empty.\n";
-            return;
-        }
-        cout << "Stack (top -> bottom): ";
-        for (int i = top; i >= 0; i--)
-            cout << arr[i] << " ";
-        cout << endl;
-    }
-};
-
-int main() {
-    cout << "--- Integer Stack ---\n";
-    Stack<int> si;
-    si.push(10);
-    si.push(20);
-    si.push(30);
-    si.display();
-    si.pop();
-    si.display();
-
-    cout << "\n--- String Stack ---\n";
-    Stack<string> ss;
-    ss.push("hello");
-    ss.push("world");
-    ss.push("OOP");
-    ss.display();
-    ss.pop();
-    ss.display();
-
-    return 0;
-}
-```
-
-**Run:**
-```bash
-g++ -o q23 q23.cpp
-./q23
-```
-
----
-
----
-
-# RUNTIME POLYMORPHISM / VIRTUAL FUNCTIONS (C++)
-
----
-
-## Q19 – Employee Salary with Virtual Functions
-
-**Concept:** Pure virtual function, base class pointer, runtime polymorphism.
-
-```cpp
-// File: q19.cpp
-
-#include <iostream>
-using namespace std;
-
-class Employee {
-public:
-    string name;
-
-    virtual float calculateSalary() = 0;  // pure virtual
-
-    void display() {
-        cout << "Employee: " << name
-             << " | Salary: Rs. " << calculateSalary()
-             << endl;
-    }
-
-    virtual ~Employee() {}
-};
-
-class FullTimeEmployee : public Employee {
-    float monthlySalary;
-
-public:
-    FullTimeEmployee(string n, float s) {
-        name          = n;
-        monthlySalary = s;
-    }
-
-    float calculateSalary() override {
-        return monthlySalary;
-    }
-};
-
-class PartTimeEmployee : public Employee {
-    float hours;
-    float rate;
-
-public:
-    PartTimeEmployee(string n, float h, float r) {
-        name  = n;
-        hours = h;
-        rate  = r;
-    }
-
-    float calculateSalary() override {
-        return hours * rate;
-    }
-};
-
-int main() {
-    Employee* e1 = new FullTimeEmployee("Anjali", 55000);
-    Employee* e2 = new PartTimeEmployee("Ravi", 80, 250);
-
-    e1->display();
-    e2->display();
-
-    delete e1;
-    delete e2;
-
-    return 0;
-}
-```
-
-**Run:**
-```bash
-g++ -o q19 q19.cpp
-./q19
-```
-
----
-
----
-
-## Quick Reference – All Run Commands
-
-```bash
-# Java Questions
-javac Q1.java  && java Q1
-javac Q9.java  && java Q9
-javac Q10.java && java Q10
-javac Q12.java && java Q12
-javac Q13.java && java Q13
-javac Q18.java && java Q18
-javac Q25.java && java Q25
-javac Q26.java && java Q26
-
-# Java Package Questions (run from parent folder)
-mkdir converter && javac converter/UnitConverter.java && javac Q3.java  && java Q3
-mkdir calc      && javac calc/Calculator.java         && javac Q14.java && java Q14
-mkdir hospital  && javac hospital/Patient.java        && javac Q24.java && java Q24
-
-# C++ Questions
-g++ -o q2  q2.cpp  && ./q2
-g++ -o q4  q4.cpp  && ./q4
-g++ -o q5  q5.cpp  && ./q5
-g++ -o q6  q6.cpp  && ./q6
-g++ -o q7  q7.cpp  && ./q7
-g++ -o q8  q8.cpp  && ./q8
-g++ -o q15 q15.cpp && ./q15
-g++ -o q19 q19.cpp && ./q19
-g++ -o q20 q20.cpp && ./q20
-g++ -o q21 q21.cpp && ./q21
-g++ -o q22 q22.cpp && ./q22
-g++ -o q23 q23.cpp && ./q23
-```
-
----
-
-*Generated for Semester 4 – OOP Lab (Java & C++)*
+| Practical | Topic | Language | Key Concept |
+|---|---|---|---|
+| 4 | Hamming Code | C++ | Error detection & single-bit correction using parity bits |
+| 5 | Sliding Window | C++ | Go-Back-N vs Selective Repeat flow control |
+| 6 | IP Subnetting | C++ | CIDR, subnet mask, network/broadcast address calculation |
+| 7 | Dijkstra's Algorithm | C++ | Shortest path in weighted graphs using greedy relaxation |
+| 8 | UDP File Transfer | Python | Connectionless file transfer with application-level framing |
+| 9 | UDP File Transfer (Extended) | Python | Same as above with detailed comments and binary file support |
+| 10 | DNS Lookup | Python | Forward and reverse DNS resolution using socket library |
